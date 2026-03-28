@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Neural Energy Hypothesis</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --ink-light: #4a4a4a;
+    --ink-faint: #8a8a8a;
+    --paper: #faf8f4;
+    --paper-warm: #f2ede4;
+    --accent: #c0392b;
+    --accent-light: #e8d5d3;
+    --rule: #d4cfc7;
+    --margin: 280px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.7;
+    font-size: 16px;
+  }
+
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px;
+    background: var(--ink);
+    color: var(--paper);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(135deg, transparent 0%, rgba(192,57,43,0.15) 100%);
+    pointer-events: none;
+  }
+
+  .cover-label {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 48px;
+  }
+
+  .cover h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: clamp(36px, 5vw, 64px);
+    line-height: 1.15;
+    max-width: 700px;
+    margin-bottom: 32px;
+    font-weight: 700;
+  }
+
+  .cover h1 em {
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  .cover-sub {
+    font-size: 18px;
+    font-weight: 300;
+    color: rgba(250,248,244,0.65);
+    max-width: 560px;
+    line-height: 1.6;
+    margin-bottom: 64px;
+  }
+
+  .cover-meta {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(250,248,244,0.35);
+  }
+
+  .doc {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 80px 40px;
+  }
+
+  .section {
+    margin-bottom: 72px;
+    padding-bottom: 72px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .section:last-child {
+    border-bottom: none;
+  }
+
+  .section-number {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: clamp(22px, 3vw, 30px);
+    line-height: 1.25;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: var(--ink);
+  }
+
+  h3 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 18px;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--ink-light);
+    margin-bottom: 16px;
+    margin-top: 40px;
+  }
+
+  p {
+    margin-bottom: 20px;
+    color: var(--ink-light);
+    font-size: 16px;
+    line-height: 1.8;
+  }
+
+  p strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .lede {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 20px;
+    line-height: 1.65;
+    color: var(--ink);
+    margin-bottom: 32px;
+    font-weight: 400;
+  }
+
+  .callout {
+    background: var(--paper-warm);
+    border-left: 3px solid var(--accent);
+    padding: 24px 28px;
+    margin: 36px 0;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .callout p {
+    margin-bottom: 0;
+    font-size: 15px;
+  }
+
+  .callout strong {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .waterfall {
+    margin: 40px 0;
+    position: relative;
+  }
+
+  .waterfall-item {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 4px;
+    align-items: flex-start;
+  }
+
+  .waterfall-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 28px;
+    padding-top: 4px;
+  }
+
+  .waterfall-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+    margin-top: 6px;
+  }
+
+  .waterfall-line {
+    width: 1px;
+    flex: 1;
+    background: var(--accent-light);
+    min-height: 32px;
+    margin-top: 4px;
+  }
+
+  .waterfall-item:last-child .waterfall-line {
+    display: none;
+  }
+
+  .waterfall-content {
+    padding-bottom: 28px;
+    flex: 1;
+  }
+
+  .waterfall-content h4 {
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 6px;
+    font-size: 15px;
+  }
+
+  .waterfall-content p {
+    font-size: 14px;
+    margin-bottom: 0;
+    color: var(--ink-faint);
+    line-height: 1.6;
+  }
+
+  .spectrum-bar {
+    margin: 40px 0;
+    background: var(--paper-warm);
+    border-radius: 8px;
+    padding: 32px;
+  }
+
+  .spectrum-label-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .spectrum-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .spectrum-track {
+    height: 8px;
+    background: linear-gradient(to right, var(--accent), #e07b72, #e8b4b0, #f0d4d2, #d4d4d4);
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+
+  .spectrum-desc {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .spectrum-desc p {
+    font-size: 13px;
+    margin: 0;
+    flex: 1;
+    color: var(--ink-faint);
+    line-height: 1.5;
+  }
+
+  .energy-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 32px 0;
+    font-size: 14px;
+  }
+
+  .energy-table th {
+    text-align: left;
+    padding: 12px 16px;
+    background: var(--ink);
+    color: var(--paper);
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .energy-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink-light);
+    vertical-align: top;
+  }
+
+  .energy-table tr:nth-child(even) td {
+    background: var(--paper-warm);
+  }
+
+  .energy-table td:first-child {
+    font-weight: 500;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  .thesis-box {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 48px;
+    border-radius: 4px;
+    margin: 48px 0;
+  }
+
+  .thesis-box h3 {
+    color: var(--accent);
+    font-style: normal;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
+
+  .thesis-box p {
+    color: rgba(250,248,244,0.8);
+    font-family: 'Libre Baskerville', serif;
+    font-size: 19px;
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  .loop-diagram {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 36px 0;
+  }
+
+  .loop-item {
+    background: var(--paper-warm);
+    border: 1px solid var(--rule);
+    padding: 20px;
+    border-radius: 4px;
+    position: relative;
+  }
+
+  .loop-item::after {
+    content: '↓';
+    position: absolute;
+    bottom: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--accent);
+    font-size: 18px;
+    font-weight: bold;
+    z-index: 1;
+  }
+
+  .loop-item:nth-child(3)::after,
+  .loop-item:nth-child(4)::after {
+    content: '';
+  }
+
+  .loop-item h4 {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--ink);
+  }
+
+  .loop-item p {
+    font-size: 12px;
+    margin: 0;
+    color: var(--ink-faint);
+    line-height: 1.5;
+  }
+
+  .footnote-section {
+    background: var(--paper-warm);
+    padding: 40px;
+    border-top: 2px solid var(--rule);
+    margin-top: 40px;
+  }
+
+  .footnote-section h3 {
+    font-family: 'DM Sans', sans-serif;
+    font-style: normal;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
+
+  .footnote-section p {
+    font-size: 13px;
+    color: var(--ink-faint);
+    margin-bottom: 10px;
+  }
+
+  @media (max-width: 600px) {
+    .cover { padding: 40px 24px; }
+    .doc { padding: 48px 24px; }
+    .loop-diagram { grid-template-columns: 1fr; }
+    .thesis-box { padding: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-label">Hypothesis Paper — Draft 1.0</div>
+  <h1>The Neural Energy <em>Hypothesis</em></h1>
+  <p class="cover-sub">A reframing of ADHD and Autism as a brain energy management disorder — not an attention or dopamine disorder — and its implications for treatment, the spectrum, and why we are all more similar than we think.</p>
+  <div class="cover-meta">Developed from lived experience &amp; existing neuroscience research</div>
+</div>
+
+<div class="doc">
+
+  <!-- SECTION 1: THE CORE THESIS -->
+  <div class="section">
+    <div class="section-number">Section 01</div>
+    <h2>The Central Argument</h2>
+    <p class="lede">ADHD and Autism are not primarily disorders of attention, dopamine, or behaviour. They are disorders of neural energy management — specifically, a mismatch between how much glucose the brain demands and how reliably it can be supplied.</p>
+    <p>Everything that follows — the inattention, the emotional dysregulation, the anxiety, the sensory sensitivity, the executive dysfunction, the burnout — is downstream of this single root cause. We have been treating the symptoms for decades while missing the fire.</p>
+    
+    <div class="thesis-box">
+      <h3>The Thesis in One Sentence</h3>
+      <p>"The ADHD and Autistic brain burns through glucose faster than the average brain, and everything we label as a symptom is the rational, predictable response of a brain operating in chronic energy deficit."</p>
+    </div>
+
+    <p>This is not a rejection of neuroscience — it is a reinterpretation of what the neuroscience is actually showing us. The data on dopamine dysregulation, the data on glucose metabolism, the data on stimulant effectiveness — it all fits this model. The causal direction has simply been assumed incorrectly.</p>
+  </div>
+
+  <!-- SECTION 2: THE SCIENCE -->
+  <div class="section">
+    <div class="section-number">Section 02</div>
+    <h2>What the Science Already Tells Us</h2>
+    <p>Several established findings, when placed in the correct causal sequence, directly support this model.</p>
+
+    <h3>Elevated glucose metabolism is measurable and confirmed</h3>
+    <p>PET scan studies consistently show higher rates of cerebral glucose metabolism in ADHD brains, particularly in the prefrontal cortex — the region responsible for executive function, impulse control, and working memory. This is not contested. What has been contested is what it <em>means</em>. The prevailing assumption is that it is a secondary effect of dopamine dysregulation. The hypothesis presented here inverts that assumption: the elevated glucose demand is the primary condition.</p>
+
+    <h3>The brain's energy budget is already extreme by default</h3>
+    <p>The human brain accounts for approximately 2% of body weight but consumes roughly 20% of total glucose supply at rest. It has almost no local energy storage — it is critically dependent on continuous glucose delivery from the bloodstream. Any brain operating at higher-than-average metabolic demand is therefore operating with a smaller margin of error than standard models assume.</p>
+
+    <h3>Why the demand is higher: hyperactive baseline activation</h3>
+    <p>Both ADHD and Autism involve nervous systems with higher baseline activation in sensory processing and threat-detection circuits. These circuits are metabolically expensive. In a neurotypical brain, these systems modulate up and down in response to environment. In ADHD and Autistic brains, they appear to run at elevated levels continuously — even in environments that most people would find unstimulating. This constant background processing creates a structural reason for higher glucose demand that precedes any discussion of dopamine.</p>
+
+    <h3>Why dopamine dysregulation is the effect, not the cause</h3>
+    <p>When the brain's glucose supply drops below demand, dopamine-seeking behaviour is a rational emergency response. Dopamine drives the organism to seek stimulation, novelty, and reward — behaviours that historically would lead to finding food and restoring energy. The dopamine system is being recruited as a compensatory mechanism. Stimulants and caffeine work — not because they fix a dopamine disorder — but because they increase metabolic efficiency and cerebral blood flow, temporarily narrowing the gap between demand and supply. When the fuel problem is solved directly, the dopamine-seeking behaviour disappears. This is both observable in lived experience and predicted by the model.</p>
+
+    <div class="callout">
+      <strong>Supporting Evidence</strong>
+      <p>Caffeine (adenosine blockade — masking the fatigue signal) and Adderall (increased metabolic efficiency and cerebral blood flow) are chemically unrelated molecules that produce near-identical functional benefits in ADHD brains. The only parsimonious explanation is that both are addressing the same underlying energy supply problem through different mechanisms.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 3: THE WATERFALL -->
+  <div class="section">
+    <div class="section-number">Section 03</div>
+    <h2>The Cascade: How One Problem Creates Everything Else</h2>
+    <p>Once the root cause is established — elevated neural energy demand meeting unreliable glucose supply — every subsequent symptom can be mapped as a logical downstream consequence. This is the cascade.</p>
+
+    <div class="waterfall">
+      <div class="waterfall-item">
+        <div class="waterfall-connector"><div class="waterfall-dot"></div><div class="waterfall-line"></div></div>
+        <div class="waterfall-content">
+          <h4>Structural higher energy demand</h4>
+          <p>Autistic and ADHD brains run sensory processing and threat-detection circuits at higher baseline activation. This is the structural root — likely genetic, certainly neurological.</p>
+        </div>
+      </div>
+      <div class="waterfall-item">
+        <div class="waterfall-connector"><div class="waterfall-dot"></div><div class="waterfall-line"></div></div>
+        <div class="waterfall-content">
+          <h4>Chronic glucose deficit develops</h4>
+          <p>Standard diets, irregular eating, and the modern food environment — dominated by fast-release carbohydrates that spike and crash — cannot meet the sustained demand. A gap opens between what the brain needs and what it has.</p>
+        </div>
+      </div>
+      <div class="waterfall-item">
+        <div class="waterfall-connector"><div class="waterfall-dot"></div><div class="waterfall-line"></div></div>
+        <div class="waterfall-content">
+          <h4>Executive function and memory degrade first</h4>
+          <p>The prefrontal cortex — responsible for working memory, planning, impulse control, and emotional regulation — is the most energy-expensive region of the brain. Under energy restriction, it is the first to be rationed. This is why "brain fog," forgetfulness, and poor executive function are universal early-stage symptoms. This is triage, not disorder.</p>
+        </div>
+      </div>
+      <div class="waterfall-item">
+        <div class="waterfall-connector"><div class="waterfall-dot"></div><div class="waterfall-line"></div></div>
+        <div class="waterfall-content">
+          <h4>Emergency systems activate</h4>
+          <p>The brain triggers cortisol and adrenaline release as an energy mobilisation mechanism. In the short term this is adaptive. Chronically, it presents as anxiety, irritability, emotional dysregulation, and heightened sensory sensitivity. These are not psychological disorders. They are emergency protocols running continuously.</p>
+        </div>
+      </div>
+      <div class="waterfall-item">
+        <div class="waterfall-connector"><div class="waterfall-dot"></div><div class="waterfall-line"></div></div>
+        <div class="waterfall-content">
+          <h4>Dopamine-seeking behaviour escalates</h4>
+          <p>To drive the organism toward fast energy sources, the brain amplifies dopamine-seeking: novelty, stimulation, reward. This looks like impulsivity, distraction, risk-taking, and addiction vulnerability. It is not a broken reward system — it is a working reward system being used as an energy procurement tool.</p>
+        </div>
+      </div>
+      <div class="waterfall-item">
+        <div class="waterfall-connector"><div class="waterfall-dot"></div><div class="waterfall-line"></div></div>
+        <div class="waterfall-content">
+          <h4>Burnout occurs</h4>
+          <p>Sustained operation under energy deficit, combined with chronic cortisol elevation, eventually leads to systemic burnout. This is the point where the individual can no longer compensate. The burnout is not psychological weakness — it is metabolic depletion.</p>
+        </div>
+      </div>
+      <div class="waterfall-item">
+        <div class="waterfall-connector"><div class="waterfall-dot"></div><div class="waterfall-line"></div></div>
+        <div class="waterfall-content">
+          <h4>Burnout damages the gut microbiome</h4>
+          <p>Chronic cortisol elevation damages intestinal barrier integrity and degrades microbiome diversity. This is well established in the stress-gut literature. The consequence relevant here: impaired gut function means impaired glucose absorption, which means the same diet now delivers even less fuel to a brain that needed more to begin with.</p>
+        </div>
+      </div>
+      <div class="waterfall-item">
+        <div class="waterfall-connector"><div class="waterfall-dot"></div><div class="waterfall-line"></div></div>
+        <div class="waterfall-content">
+          <h4>The feedback loop locks in</h4>
+          <p>Worse gut function → worse glucose delivery → deeper energy deficit → more stress hormones → further gut damage → even worse glucose delivery. The system is now self-reinforcing. This is why ADHD and Autistic burnout is not simply "being tired" — it is a locked negative feedback loop with no natural exit without intervention.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Key Insight</strong>
+      <p>The deeper into this loop someone falls, the more their energy threshold lowers — meaning activities and stressors that were previously manageable begin to trigger emergency responses. A walk that was once effortless now provokes anxiety. This is not a psychological regression. It is a lowering of the energy buffer to the point where even mild competing demands breach it.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 4: THE SPECTRUM -->
+  <div class="section">
+    <div class="section-number">Section 04</div>
+    <h2>Reframing the Spectrum — and Why We Are All On It</h2>
+    <p class="lede">The "spectrum" is not a spectrum of condition severity. It is a spectrum of neural energy tolerance and glucose management efficiency.</p>
+
+    <div class="spectrum-bar">
+      <div class="spectrum-label-row">
+        <span class="spectrum-label">High depletion / Low threshold</span>
+        <span class="spectrum-label">Low depletion / High threshold</span>
+      </div>
+      <div class="spectrum-track"></div>
+      <div class="spectrum-desc">
+        <p>Deep burnout. Emergency systems dominate. All symptoms maximally expressed. The loop is locked.</p>
+        <p>Well-regulated. High energy buffer. Symptoms invisible to outside observers. "Neurotypical."</p>
+      </div>
+    </div>
+
+    <p>The phrase "we're all a little bit on the spectrum" is something neurotypical people say and genuinely mean — and understanding why they feel that way is actually important to this model. It is not that they are experiencing the same thing at lower intensity on a daily basis. It is that they have touched the same emergency state, just rarely and briefly. Everyone has had days of poor sleep, skipped meals, extreme stress — and on those days, neurotypical people get a fleeting glimpse of what operating in chronic energy deficit feels like. The brain fog, the irritability, the inability to concentrate. They recognise something familiar in the description of ADHD and Autism because they have briefly touched the same wall. They just live a league away from it under normal conditions. The neurological difference is real. The experience at the wall is shared.</p>
+
+    <p>This also explains a phenomenon that the dopamine model cannot: <strong>at their worst, ADHD and Autistic people present with nearly identical symptoms regardless of their individual differences.</strong> The variation we observe between individuals — the "everyone is different" quality of the spectrum — is variation in threshold, trigger profile, and recovery rate. At maximum energy depletion, every brain runs the same emergency protocol. The diversity is at the functional end. The convergence is at the crisis end.</p>
+
+    <h3>Why "high functioning" is an energy concept, not an intelligence one</h3>
+    <p>A "high functioning" Autistic or ADHD person is not someone with a milder neurological difference. They are someone who, for reasons of diet, lifestyle, environment, or genetic variation in metabolic efficiency, is operating with a larger energy buffer. When that buffer is depleted — through burnout, illness, major life stress, or poor diet — they present identically to anyone else at the same depletion level. This is why high-functioning individuals often describe sudden, bewildering collapses: they were not "getting better" — they were managing their buffer. And then it ran out.</p>
+
+    <table class="energy-table">
+      <tr>
+        <th>What it looks like</th>
+        <th>What it actually is</th>
+      </tr>
+      <tr>
+        <td>Attention difficulties</td>
+        <td>Prefrontal cortex under-fuelled, rationing processing capacity</td>
+      </tr>
+      <tr>
+        <td>Emotional dysregulation</td>
+        <td>Emergency cortisol response to energy deficit</td>
+      </tr>
+      <tr>
+        <td>Sensory sensitivity</td>
+        <td>Threat-detection circuits amplified by energy scarcity</td>
+      </tr>
+      <tr>
+        <td>Dopamine seeking / impulsivity</td>
+        <td>Brain driving organism toward fast energy sources</td>
+      </tr>
+      <tr>
+        <td>Social exhaustion</td>
+        <td>Social processing is expensive — luxury spend when running low</td>
+      </tr>
+      <tr>
+        <td>Memory and brain fog</td>
+        <td>Working memory is the first rationed resource under energy constraint</td>
+      </tr>
+      <tr>
+        <td>Burnout</td>
+        <td>Total systemic depletion — metabolic, not psychological</td>
+      </tr>
+      <tr>
+        <td>"Good days / bad days"</td>
+        <td>Variation in available energy buffer driven by sleep, diet, and stress load</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- SECTION 4b: WHAT THIS MODEL DOES NOT CLAIM -->
+  <div class="section">
+    <div class="section-number">Section 04b</div>
+    <h2>What This Model Does Not Claim: The Biological Floor</h2>
+    <p class="lede">This hypothesis is not arguing that glucose regulation fixes everything. It is arguing that chronic energy deficit makes everything dramatically worse — and that stabilising fuel supply gives the individual the best possible chance to be their best possible version of themselves. Those are not the same thing.</p>
+
+    <p>There is a biological floor. Dyslexia, dyspraxia, dyscalculia, time blindness, difficulties with numbers and sequencing, PDA (Pathological Demand Avoidance), non-verbal Autism — these are neurological differences in how the brain is wired. They reflect genuine structural variation in neural architecture. No dietary intervention changes the fundamental wiring of the brain.</p>
+
+    <p>What glucose regulation changes is the severity of expression and the individual's capacity to manage and adapt to those differences. A dyslexic brain that is chronically under-fuelled is a dyslexic brain that is also operating with degraded working memory, heightened anxiety, and depleted executive function — all of which compound the underlying reading difficulty into something that can feel paralysing. The same brain, well-fuelled and stable, still has dyslexia. But it has the cognitive resources to deploy compensatory strategies, the emotional regulation to manage frustration, and the working memory to support the slower processing pathway.</p>
+
+    <div class="callout">
+      <strong>A Concrete Example</strong>
+      <p>PDA — the intense, anxiety-driven resistance to demands and perceived loss of control — has a clear energy model. At maximum depletion, the threat-detection system is in constant emergency mode. Every demand, however small, is processed as a threat to an already critically low energy reserve. The resistance is not defiance. It is a depleted nervous system refusing to spend energy it does not have. As energy supply stabilises and the threat system stands down, the same individual finds demands manageable — not because the PDA has disappeared, but because the system is no longer operating at the threshold where every demand triggers a crisis response.</p>
+    </div>
+
+    <p>The distinction matters because it changes what we are asking of the individual and what we are promising them. We are not saying "eat porridge and your neurology disappears." We are saying "give your brain the fuel it needs to operate at its genuine capability, rather than at the degraded capability of a system in permanent emergency." For many people that gap — between chronic deficit and genuine capability — is enormous. The difference between being unable to leave the house and being able to hold a job. The difference between being non-functional and being genuinely thriving with support.</p>
+
+    <p>The biological differences deserve accommodation, understanding, and appropriate support regardless of dietary intervention. What we are arguing is that those supports work infinitely better when the brain they are supporting is not simultaneously fighting a fuel crisis.</p>
+  </div>
+
+  <!-- SECTION 5: THE BURNOUT LOOP -->
+  <div class="section">
+    <div class="section-number">Section 05</div>
+    <h2>The Burnout Loop in Detail</h2>
+    <p>The reason ADHD and Autistic burnout is so difficult to recover from without direct intervention is that it creates a self-sealing system. Understanding each node of the loop is critical to understanding why willpower, rest alone, or standard lifestyle advice fails to break it.</p>
+
+    <div class="loop-diagram">
+      <div class="loop-item">
+        <h4>Chronic energy deficit</h4>
+        <p>Brain demand consistently exceeds glucose supply. Emergency systems become baseline state.</p>
+      </div>
+      <div class="loop-item">
+        <h4>Sustained cortisol elevation</h4>
+        <p>Cortisol mobilises energy reserves short-term. Chronically, it degrades gut lining and microbiome diversity.</p>
+      </div>
+      <div class="loop-item">
+        <h4>Gut microbiome degradation</h4>
+        <p>Damaged gut reduces efficiency of glucose absorption. The same food now delivers less fuel.</p>
+      </div>
+      <div class="loop-item">
+        <h4>Deeper deficit / lower threshold</h4>
+        <p>Less fuel reaching the brain increases deficit. Threshold lowers further. The loop tightens.</p>
+      </div>
+    </div>
+
+    <p>The reason this loop cannot be broken by rest alone is that rest does not directly repair the gut or restore glucose regulation. The reason it cannot be broken by standard dietary advice is that fast-release carbohydrates spike and crash the system, adding further stress. The reason stimulants do not break it is that they narrow the gap without addressing supply — and over time, as the loop deepens, they become less effective.</p>
+
+    <div class="callout">
+      <strong>The Exit Condition</strong>
+      <p>Breaking the loop requires one thing: stable, continuous glucose supply that never creates a spike-crash cycle. This starves the cortisol response of its trigger. As cortisol normalises, gut integrity begins to recover. As gut integrity recovers, glucose absorption improves. As glucose delivery improves, the brain's energy buffer expands. As the buffer expands, the emergency systems stand down. This is a slow process — weeks to months — because it is rebuilding a system that has been degraded over years.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 6: THE INTERVENTION -->
+  <div class="section">
+    <div class="section-number">Section 06</div>
+    <h2>The Protocol: What to Do and Why It Works</h2>
+    <p>The intervention is not a medication. It is not a supplement protocol or a wellness trend. It is a precise dietary strategy designed to do one specific thing: give a high-demand brain a continuous, stable supply of glucose that matches its structural requirement without triggering the spike-crash cycle that maintains the burnout loop.</p>
+
+    <p>Every element of the protocol has a mechanistic reason. Nothing here is arbitrary.</p>
+
+    <h3>The Foundation: Rolled Oats as the Primary Fuel Source</h3>
+    <p><strong>What:</strong> Rolled oats (not instant, not heavily processed), prepared simply — with water or milk, without sugar additions. A portion of approximately 50–80g dry weight, eaten consistently — typically on waking and repeated across the day as the primary carbohydrate source.</p>
+
+    <p><strong>Why oats specifically:</strong> Oats have a glycaemic index of approximately 55 — low enough to avoid an insulin spike, high enough to meaningfully raise blood glucose from a deficit state. Critically, they contain a soluble fibre called beta-glucan which forms a viscous gel in the digestive tract, physically slowing glucose absorption into the bloodstream. This is not a minor effect — beta-glucan measurably flattens the glucose response curve compared to almost any other carbohydrate of equivalent caloric value. The result is a flat, sustained glucose release across a 2–3 hour window with no meaningful crash at the end.</p>
+
+    <p><strong>Why not other "healthy" carbohydrates:</strong> Brown rice, sweet potato, wholemeal bread, and most other whole food carbohydrates lack the beta-glucan mechanism. They release glucose more quickly, produce a more pronounced insulin response, and create a more significant post-meal dip. For a standard metabolism this is fine. For a nervous system that cannot afford the dip, it is the difference between stability and renewed deficit. Oats are structurally unusual in the carbohydrate world — their particular fibre composition is the reason they work when other slow-release options do not produce the same result.</p>
+
+    <p><strong>Why frequency matters:</strong> A single bowl of oats in the morning is not the protocol. The goal is to never allow a meaningful glucose gap to develop. Depending on individual metabolism and activity level, this typically means eating oats or a slow-release carbohydrate source every 2–3 hours. The brain cannot store glucose. Every gap in supply is a gap in function. Consistent frequency is as important as the choice of food.</p>
+
+    <div class="callout">
+      <strong>The Beta-Glucan Mechanism</strong>
+      <p>Beta-glucan is a soluble fibre that dissolves in water to form a thick gel in the small intestine. This gel physically slows the rate at which glucose molecules can cross the intestinal wall into the bloodstream — acting as a controlled-release mechanism with no pharmaceutical equivalent. It also feeds beneficial gut bacteria (particularly Lactobacillus and Bifidobacterium species), supporting microbiome recovery as a secondary effect of the same mechanism that stabilises glucose.</p>
+    </div>
+
+    <h3>Adding Protein: Slowing the Curve and Rebuilding the Signal</h3>
+    <p><strong>What:</strong> A moderate protein source alongside the oats at each sitting — eggs, Greek yogurt, or a small amount of nut butter. Not a large protein-dominant meal. A supporting addition.</p>
+
+    <p><strong>Why:</strong> Protein consumed alongside carbohydrate has two relevant effects. First, it further slows gastric emptying — meaning the carbohydrate reaches the small intestine more slowly, extending the glucose release window beyond even what beta-glucan achieves alone. Second, and critically for this population, protein provides the amino acid precursors for neurotransmitter synthesis. Tyrosine is the precursor to dopamine and norepinephrine. Tryptophan is the precursor to serotonin. A brain that has been running in deficit and chronic stress will have depleted these precursors over time. Protein alongside every carbohydrate meal is not about muscle or satiety — it is about providing the raw materials for the brain to rebuild its own signalling chemistry as the energy supply stabilises.</p>
+
+    <h3>Gut Repair: Rebuilding the Absorption System</h3>
+    <p><strong>What:</strong> Daily fermented foods — live yogurt, kefir, kimchi, sauerkraut, or kombucha — alongside prebiotic fibre sources (oats themselves, bananas, garlic, onion, leeks).</p>
+
+    <p><strong>Why:</strong> Chronic cortisol elevation damages the intestinal epithelial barrier — the lining through which glucose and nutrients are absorbed. It also reduces the diversity of beneficial gut bacteria, which are involved in producing short-chain fatty acids that maintain barrier integrity and regulate the gut-brain signalling axis. A damaged gut absorbs glucose less efficiently — meaning the same oats that stabilise a healthy gut may initially under-deliver in a burned-out system. Fermented foods seed the microbiome with live beneficial bacteria. Prebiotic fibre feeds them. This is the repair mechanism for the absorption infrastructure, and without it, the glucose stabilisation protocol works more slowly than it otherwise would. Beta-glucan in oats is itself a prebiotic — the protocol is inherently gut-supportive, but deliberate fermented food addition accelerates recovery.</p>
+
+    <h3>Breaking the Cortisol Cycle: Magnesium</h3>
+    <p><strong>What:</strong> Magnesium glycinate, 300–400mg, taken in the evening.</p>
+
+    <p><strong>Why:</strong> Magnesium is a cofactor in over 300 enzymatic reactions, several of which are directly involved in HPA axis regulation — the system that controls cortisol release. Chronic stress depletes magnesium, and magnesium depletion makes the HPA axis more reactive, creating a loop where stress causes magnesium loss which causes more stress reactivity. Magnesium glycinate (the glycinate form specifically, not oxide or citrate) crosses the blood-brain barrier more effectively than other forms and has demonstrated effects on reducing cortisol reactivity and improving sleep quality. Taken in the evening, it supports the overnight cortisol reset that is necessary for the following day's baseline to be lower. It does not sedate — it allows the nervous system to downregulate to a level it may not have reached in years.</p>
+
+    <h3>Reducing Neuroinflammation: Omega-3s</h3>
+    <p><strong>What:</strong> High-quality omega-3 fish oil, 2–3g EPA+DHA daily.</p>
+
+    <p><strong>Why:</strong> Chronic activation of the stress response generates neuroinflammation — inflammatory signalling within the brain itself. This neuroinflammation degrades synaptic efficiency, impairs glucose metabolism at the cellular level, and contributes to the cognitive symptoms of burnout independently of glucose supply. Omega-3 fatty acids — specifically EPA and DHA — are incorporated into neuronal cell membranes and have well-documented anti-inflammatory effects in neural tissue. They do not fix the energy supply problem. They reduce the inflammatory load on a brain that has been running the emergency response for extended periods, improving its ability to utilise glucose efficiently once supply is restored. Think of it as reducing the damage done while the fuel situation is resolved.</p>
+
+    <h3>Sleep as a Metabolic Intervention</h3>
+    <p><strong>Why sleep is part of the protocol, not a separate issue:</strong> During sleep, the brain performs two metabolically critical functions. The glymphatic system — active primarily during deep sleep — clears metabolic waste products that accumulate during waking brain activity, including products of the elevated glucose metabolism that characterises this population. Separately, overnight is when neurotransmitter precursor synthesis occurs at its highest rate — the tyrosine and tryptophan from dietary protein are converted into dopamine, norepinephrine, and serotonin during sleep. Poor sleep does not just cause tiredness. It means the brain enters the following day with both higher metabolic waste load and lower neurotransmitter reserves, starting the day in a deeper deficit than if sleep had been restorative.</p>
+
+    <p>The relationship between glucose regulation and sleep is bidirectional and self-reinforcing. Poor glucose regulation — particularly late-day cortisol elevation from energy deficit — disrupts sleep architecture. Poor sleep worsens glucose regulation and insulin sensitivity the following day. The protocol addresses this indirectly: as glucose stabilises during waking hours, evening cortisol drops, sleep quality improves, which further stabilises the following day's glucose response. This is the positive feedback loop running in reverse — and it is one of the reasons people on the protocol often report sleep improvements before they fully understand why.</p>
+
+    <h3>The Timeline: What to Expect and When</h3>
+
+    <table class="energy-table">
+      <tr>
+        <th>Timeframe</th>
+        <th>What is happening</th>
+        <th>What you may notice</th>
+      </tr>
+      <tr>
+        <td>Days 1–3</td>
+        <td>Blood glucose begins stabilising. Emergency response frequency reduces. Brain receiving more consistent fuel than it may have in months or years.</td>
+        <td>Reduced reactivity to minor stressors. Less intense dopamine-seeking. Some people notice this within 24–48 hours.</td>
+      </tr>
+      <tr>
+        <td>Week 1–2</td>
+        <td>Cortisol patterns beginning to shift. Sleep architecture improving. Beta-glucan feeding early gut bacteria changes.</td>
+        <td>Flatter stress response. Improved sleep onset or quality. Reduced brain fog in the mornings.</td>
+      </tr>
+      <tr>
+        <td>Weeks 3–6</td>
+        <td>Gut microbiome beginning structural recovery. Glucose absorption efficiency improving. Magnesium levels normalising with consistent supplementation.</td>
+        <td>Previously triggering activities (exercise, social demands, noise) becoming manageable without the same response. Energy more consistent through the day.</td>
+      </tr>
+      <tr>
+        <td>Months 2–4</td>
+        <td>Structural gut repair progressing. Insulin sensitivity improving. Neuroinflammation reducing with consistent omega-3s. The buffer is genuinely widening.</td>
+        <td>The return of capacity that felt permanently lost. Better executive function. The ability to exercise without a significant crash. More stable mood across the full day.</td>
+      </tr>
+      <tr>
+        <td>Months 4+</td>
+        <td>The system is rebuilding its genuine baseline. The loop that was self-reinforcing in the negative direction is now self-reinforcing in the positive one.</td>
+        <td>Increasing resilience to stressors that would previously have caused significant dysregulation. The biological traits remain — but the amplification by chronic deficit is gone.</td>
+      </tr>
+    </table>
+
+    <div class="callout">
+      <strong>The Critical Point About Timeline</strong>
+      <p>Most dietary interventions are evaluated over days or a few weeks. This protocol works on a timescale of months because it is repairing systems — the gut microbiome, insulin sensitivity, HPA axis reactivity — that degraded slowly over years. Short-term experiments will show partial results and be abandoned. The protocol only demonstrates its full effect when sustained long enough for the structural repair to complete. Expecting two-week results from a system that took two years to degrade is the reason most attempts fail.</p>
+    </div>
+
+    <h3>What the Protocol is Not</h3>
+    <p>It is not a cure. The underlying neurological difference — the higher baseline energy demand — does not change. What changes is whether that demand is being met. A well-fuelled high-demand brain is not a neurotypical brain. It is a high-demand brain operating at its genuine capability rather than at the degraded capability of chronic deficit. For most people in this population, that difference is transformative. But it is important to be precise: the goal is stable function, not elimination of the neurological profile.</p>
+
+    <p>It also does not replace appropriate support for fixed neurological differences. A dyslexic brain with stable glucose regulation still benefits from appropriate reading support. An Autistic person with adequate fuel still benefits from communication accommodations and sensory-aware environments. What the protocol does is ensure that the person accessing those supports is doing so from the strongest possible neurological position — not from the position of a brain simultaneously managing a chronic energy crisis.</p>
+  </div>
+
+  <!-- SECTION 7: THE PROCUREMENT SIGNAL -->
+  <div class="section">
+    <div class="section-number">Section 07</div>
+    <h2>The Dopamine Craving as Real-Time Evidence</h2>
+    <p class="lede">The clearest observable proof of this model is not in a lab. It happens in real time, in every ADHD and Autistic person, every day — and it has been catastrophically misread.</p>
+
+    <p>After physical exercise — which creates an immediate competing demand for glucose — the brain detects an acute energy deficit. What follows is immediate, reliable, and universal: an intense craving for high-dopamine activities. Gaming. Sex. Junk food. Social media. Any fast, high-reward stimulus available.</p>
+
+    <p>This has been interpreted as evidence of a dopamine disorder. It is the opposite. It is evidence of a perfectly functioning procurement system responding to a real energy emergency.</p>
+
+    <div class="callout">
+      <strong>The Sequence, Observed Directly</strong>
+      <p>Glucose drops → brain detects energy deficit → dopamine-seeking behaviour activates immediately → craving for highest-reward activities available. The dopamine system is not broken and firing randomly. It is working exactly as designed — driving the organism toward fast energy sources. The problem is the deficit, not the response to it.</p>
+    </div>
+
+    <h3>Why this is devastating to the standard model</h3>
+    <p>If ADHD were primarily a dopamine dysregulation disorder, dopamine-seeking behaviour would be present as a baseline, irrespective of metabolic state. It would not reliably spike in direct response to a glucose depletion event. The fact that it does — predictably, in sequence, with no other variable changed — points unambiguously to glucose deficit as the trigger and dopamine-seeking as the response.</p>
+
+    <h3>What this explains that the standard model cannot</h3>
+    <p><strong>Addiction vulnerability</strong> — ADHD and Autistic individuals are statistically overrepresented in addiction. If the procurement system is chronically active due to chronic energy deficit, it will latch onto any reliable dopamine source. Addiction is the procurement system finding a solution and refusing to release it.</p>
+    <p><strong>Hyperfocus</strong> — high-dopamine states are also metabolically efficient. The brain defends hyperfocus fiercely because it has found a state where energy demand is met and the emergency system can stand down. It is not a disorder feature. It is a coping solution.</p>
+    <p><strong>Why willpower fails</strong> — impulse control and self-regulation are prefrontal cortex functions — the most energy-expensive, first-rationed region of the brain. Asking a glucose-deficit brain to use its scarcest resource to suppress a survival signal is not a therapeutic strategy. It is asking someone who is drowning to stop reaching for the surface.</p>
+  </div>
+
+  <!-- SECTION 8: WHY TREATMENT FAILS -->
+  <div class="section">
+    <div class="section-number">Section 08</div>
+    <h2>Why Medication and Therapy Rarely Fix the Problem</h2>
+    <p class="lede">The reason ADHD and Autistic people cycle through medications, therapies, and interventions without achieving lasting resolution is not treatment resistance. It is that no standard treatment addresses the root cause. All of them operate downstream of the energy deficit.</p>
+
+    <h3>Stimulant medication</h3>
+    <p>Stimulants narrow the gap between energy supply and demand by increasing metabolic efficiency and cerebral blood flow. They work, and the relief they provide is real. But they do not repair the gut, restore glucose regulation, or reduce the structural energy demand. The underlying deficit continues. The gut continues to degrade. The burnout loop continues to tighten. Over time, as the system deteriorates further, stimulants become less effective — not because of tolerance in the conventional sense, but because the gap they are bridging has widened. Higher doses bridge a wider gap temporarily, but the trajectory is not recovery. It is managed decline.</p>
+
+    <h3>Behavioural therapy and CBT</h3>
+    <p>Cognitive Behavioural Therapy asks the patient to use executive function to modify behaviour driven by deficit. Executive function is the first casualty of energy shortage. CBT for ADHD is asking someone to use a depleted resource to manage the symptoms of its own depletion. The modest and often temporary results in the literature are exactly what this model would predict. It is not that CBT is ineffective — it is that it is being applied to the wrong problem.</p>
+
+    <h3>The deeper problem: therapy without addressing fuel</h3>
+    <p>Every therapy session, every structured intervention, every coping strategy requires cognitive energy to implement. For a brain already running in deficit, adding cognitive load without increasing supply makes the underlying condition worse in the short term, even if the insight gained is theoretically valuable. This is why so many ADHD and Autistic people describe therapy as exhausting and demoralising rather than stabilising. They are being asked to build a house while someone continues to remove bricks from the foundation.</p>
+
+    <div class="callout">
+      <strong>The Critical Implication</strong>
+      <p>No behavioural or pharmacological intervention will produce lasting change in a brain that remains in chronic energy deficit. The sequence must be: stabilise the fuel supply first, then — from a position of genuine neurological stability — apply whatever other interventions are appropriate. In that order. Not simultaneously, and never in reverse.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 9: THE JUNK FOOD TRAP -->
+  <div class="section">
+    <div class="section-number">Section 09</div>
+    <h2>The Dietary Trap: How the Modern Food Environment Makes Everything Worse</h2>
+    <p class="lede">When the brain detects an energy deficit, it does not send a sophisticated nutritional signal. It sends an urgent, simple one: get glucose, fast. And the modern food environment is perfectly designed to answer that signal in the worst possible way.</p>
+
+    <p>When an ADHD or Autistic person feels worse — more anxious, more dysregulated, more overwhelmed — they crave carbohydrates. Specifically, fast-release ones: sugar, white bread, crisps, chocolate, processed snacks. This is not weakness. It is the procurement system doing its job. The brain has identified its problem correctly. The solution it reaches for is wrong, and the environment makes it nearly impossible to reach for anything else.</p>
+
+    <h3>Why fast-release carbohydrates are the worst possible answer</h3>
+    <p>A fast-release carbohydrate spikes blood glucose rapidly. The brain gets brief relief — the deficit signal quiets. Then insulin responds to the spike, glucose drops sharply, and the brain finds itself in a deeper deficit than before the snack. The stress response re-engages harder. The craving returns stronger. Each cycle of spike and crash does two things simultaneously: it fails to solve the energy problem, and it trains the stress response to fire at a lower and lower threshold.</p>
+
+    <div class="waterfall">
+      <div class="waterfall-item">
+        <div class="waterfall-connector"><div class="waterfall-dot"></div><div class="waterfall-line"></div></div>
+        <div class="waterfall-content">
+          <h4>Brain detects energy deficit</h4>
+          <p>Stress response activates. Dopamine procurement signal fires. Cognitive clarity drops.</p>
+        </div>
+      </div>
+      <div class="waterfall-item">
+        <div class="waterfall-connector"><div class="waterfall-dot"></div><div class="waterfall-line"></div></div>
+        <div class="waterfall-content">
+          <h4>Craving for fast carbohydrates</h4>
+          <p>The brain cannot distinguish "slow glucose that will actually help" from "fast glucose that will make things worse." It just wants the signal to stop. The prefrontal cortex — the region that might override this with rational food choice — is already the most depleted resource available.</p>
+        </div>
+      </div>
+      <div class="waterfall-item">
+        <div class="waterfall-connector"><div class="waterfall-dot"></div><div class="waterfall-line"></div></div>
+        <div class="waterfall-content">
+          <h4>Fast carbohydrate consumed</h4>
+          <p>Blood glucose spikes. Brief relief. Stress response quiets temporarily. The individual feels momentarily better — reinforcing the behaviour.</p>
+        </div>
+      </div>
+      <div class="waterfall-item">
+        <div class="waterfall-connector"><div class="waterfall-dot"></div><div class="waterfall-line"></div></div>
+        <div class="waterfall-content">
+          <h4>Insulin response — glucose crashes</h4>
+          <p>The spike triggers an insulin response disproportionate to the need. Blood glucose drops below pre-snack levels. The deficit is now worse than before eating.</p>
+        </div>
+      </div>
+      <div class="waterfall-item">
+        <div class="waterfall-connector"><div class="waterfall-dot"></div><div class="waterfall-line"></div></div>
+        <div class="waterfall-content">
+          <h4>Stress response re-engages harder</h4>
+          <p>Cortisol fires again, at higher intensity. Gut lining takes another hit. The craving returns stronger. The threshold for triggering this cycle has lowered again.</p>
+        </div>
+      </div>
+      <div class="waterfall-item">
+        <div class="waterfall-connector"><div class="waterfall-dot"></div><div class="waterfall-line"></div></div>
+        <div class="waterfall-content">
+          <h4>The loop deepens</h4>
+          <p>Each cycle makes the next cycle more likely, more intense, and harder to interrupt. What begins as a dietary pattern becomes a physiological trap the individual has no conscious framework to escape.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>The cruelty of the situation</h3>
+    <p>The individual is not making bad choices. They are making the only choice available to a brain in emergency mode with depleted executive function and no conceptual framework explaining what is actually happening. They feel worse, they eat what makes them feel temporarily better, they feel worse again. From the outside this looks like poor self-control. From the inside it is an invisible physiological trap. From a systems perspective it is a completely predictable outcome of applying the wrong fuel to a high-demand engine in a food environment that offers almost nothing else.</p>
+
+    <h3>The "healthy eating" trap is equally dangerous</h3>
+    <p>The junk food trap is visible and intuitive. There is a second trap that is less obvious and arguably catches more people who are trying to do the right thing: clean, protein-forward, low-carbohydrate eating.</p>
+
+    <p>Chicken, rice and vegetables. Sweet potato and meat. Salads with lean protein. These are the foods that every nutritionist, GP, and wellness platform recommends. For a neurotypical brain with a standard energy demand, they are perfectly adequate. For a higher-demand brain that needs a continuous, stable glucose supply, they are chronically insufficient — just in a less dramatic way than junk food.</p>
+
+    <p>The mechanism is different but the outcome is the same. Clean eating does not produce the violent spike-crash cycle of fast carbohydrates. What it produces is a steady, quiet, undetectable glucose shortfall. The brain never gets the emergency signal it would from a sugar crash — it just never gets enough. The person feels vaguely flat, unmotivated, foggy, and unable to understand why, because by every external measure they are doing everything right. They are eating well. They are exercising. They are sleeping reasonably. And yet the symptoms persist.</p>
+
+    <div class="callout">
+      <strong>The Trap</strong>
+      <p>This is perhaps the most demoralising position to be in. You have done everything you were told to do. You have rejected junk food. You have committed to clean eating. You feel no better — possibly worse. The conclusion you are likely to draw is that the problem is unfixable, neurological, and permanent. The actual conclusion is that clean eating without adequate slow-release carbohydrate is still under-fuelling a high-demand brain. The solution is not less food or better food in the conventional sense. It is the right fuel — specifically, a reliable source of slow-release glucose that meets the structural demand.</p>
+    </div>
+
+    <p>Both traps — junk food and clean eating — share the same root error: designing a diet for an average brain rather than for a brain with above-average energy requirements. The difference is that junk food actively destabilises the system through spike-crash cycling, while clean low-carbohydrate eating simply fails to meet the demand. Both result in a brain operating below its energy threshold. Both produce the same downstream symptoms. Neither is addressed by conventional nutritional advice because conventional nutritional advice was not developed with a high-demand nervous system in mind.</p>
+    <p>A neurotypical person with a larger energy buffer can absorb a spike-crash cycle without breaching their stress threshold. For a higher-demand brain operating near its limit, every spike-crash is a crisis event. The modern food environment — ultra-processed, fast-release, engineered for palatability over stability — is not equally harmful to all brains. It is specifically and disproportionately harmful to brains that cannot afford the crash.</p>
+  </div>
+
+  <!-- SECTION 10: IMPLICATIONS -->
+  <div class="section">
+    <div class="section-number">Section 10</div>
+
+    <h3>For diagnosis</h3>
+    <p>Current diagnostic criteria identify patterns of behaviour and cognition that map entirely onto the energy deficit cascade described above. This is not wrong — they are real patterns. But diagnosis without addressing the root cause condemns the individual to symptom management in perpetuity. A model that identifies the energy management root allows for interventions that aim at cause rather than effect.</p>
+
+    <h3>For medication</h3>
+    <p>Stimulants are not wrong — they provide real relief because they address a real mechanism. But they are a workaround, not a fix. They narrow the gap between energy demand and supply without repairing the supply system. Their diminishing effectiveness over time, and the crashes that accompany them, are predicted by a model in which the underlying energy deficit is never resolved. They are appropriate for crisis management. They are not a long-term solution to a supply problem.</p>
+
+    <h3>For the spectrum narrative</h3>
+    <p>If the spectrum is fundamentally an energy management spectrum rather than a neurological severity spectrum, then the conversation about neurodiversity, accommodation, and treatment changes substantially. The goal is not to manage a condition — it is to support a system that has a higher-than-average energy requirement. The framing shifts from deficit to demand.</p>
+
+    <h3>For population health</h3>
+    <p>The modern food environment — ultra-processed, fast-release, spike-and-crash — is specifically mismatched with the needs of higher-demand brains. The dramatic rise in ADHD and Autism diagnoses over recent decades may be partly a diagnostic artefact, but it may also be a genuine interaction effect between a growing population with higher-demand neurology and a food supply that cannot meet it. A cheap, shelf-stable, ultra-processed diet is actively incompatible with neurological stability for this population.</p>
+  </div>
+
+  <!-- SECTION 8: WHAT THIS NEEDS -->
+  <div class="section">
+    <div class="section-number">Section 11</div>
+    <h2>What This Hypothesis Needs Next</h2>
+    <p>This model is coherent, mechanistically grounded, and consistent with existing neuroscience data. It makes falsifiable predictions. What it currently lacks is prospective testing. The following would begin to establish it:</p>
+
+    <p><strong>1. Continuous glucose monitoring (CGM) in ADHD and Autistic individuals</strong> — mapping glucose curves against symptom presentation in real time. The model predicts that symptom severity will track glucose deficit, and that stabilising glucose will reduce symptom expression.</p>
+
+    <p><strong>2. A structured dietary protocol trial</strong> — a consistent slow-release glucose intervention across a cohort, measuring behavioural, cognitive, and physiological outcomes over 12+ weeks. This exists nowhere in the literature in the form the model suggests.</p>
+
+    <p><strong>3. Gut microbiome analysis across burnout stages</strong> — testing whether microbiome degradation correlates with burnout severity and whether restoration of microbiome health precedes or follows symptom recovery.</p>
+
+    <p><strong>4. The convergence prediction</strong> — testing whether individuals at maximum burnout present with symptom profiles that are statistically indistinguishable regardless of their baseline condition label. This is a sharp, testable, novel prediction that the current model does not make.</p>
+
+    <div class="callout">
+      <strong>On the Evidence Available Now</strong>
+      <p>The evidence that currently exists is observational and individual. It is not nothing. Observed outcomes that directly contradict the predictions of the standard model — stress response flattening despite increased life stressors, exercise-triggered hypoglycaemic symptoms that resolve with glucose supply, elimination of dopamine-seeking behaviour through dietary change alone — are data. They deserve more weight than they are currently given in a field that has been model-locked for thirty years.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="footnote-section">
+  <div style="max-width: 860px; margin: 0 auto; padding: 0 40px;">
+    <h3>Referenced Scientific Context</h3>
+    <p>PET scan studies on cerebral glucose metabolism in ADHD — including Zametkin et al. (1990) and subsequent replication studies — establish elevated glucose metabolism as a measurable feature, not a theoretical one.</p>
+    <p>The gut-brain axis and cortisol-mediated gut permeability degradation are well established in stress biology literature, including work by Mayer, Tillisch et al. on the bidirectional gut-brain relationship.</p>
+    <p>Prefrontal cortex energy prioritisation under metabolic stress is consistent with known neural triage mechanisms — the PFC is one of the last regions to develop evolutionarily and the first to be rationed under metabolic constraint.</p>
+    <p>Adenosine's role as a metabolic fatigue signal and caffeine's mechanism as an adenosine antagonist are established pharmacology. The functional equivalence of caffeine and amphetamines in ADHD populations has been observed clinically though not fully theorised.</p>
+    <p><em>This document represents a hypothesis in development. It is not a clinical protocol and should not replace medical advice.</em></p>
+  </div>
+</div>
+
+</body>
+</html>
